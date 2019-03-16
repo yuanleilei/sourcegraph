@@ -4,6 +4,7 @@ import { getModeFromPath } from '../../../shared/src/languages'
 import { isLegacyFragment, parseHash } from '../../../shared/src/util/url'
 import { asyncComponent } from '../util/asyncComponent'
 import { formatHash } from '../util/url'
+import { RepoContainerRoute } from './RepoContainer'
 import { RepoHeaderContributionPortal } from './RepoHeaderContributionPortal'
 import { RepoRevContainerContext, RepoRevContainerRoute } from './RepoRevContainer'
 
@@ -12,6 +13,93 @@ const RepositoryCommitsPage = asyncComponent(() => import('./commits/RepositoryC
 const FilePathBreadcrumb = asyncComponent(() => import('./FilePathBreadcrumb'), 'FilePathBreadcrumb')
 const RepoRevSidebar = asyncComponent(() => import('./RepoRevSidebar'), 'RepoRevSidebar')
 const TreePage = asyncComponent(() => import('./TreePage'), 'TreePage')
+
+const RepositoryGitDataContainer = asyncComponent(
+    () => import('./RepositoryGitDataContainer'),
+    'RepositoryGitDataContainer',
+    require.resolveWeak('RepositoryGitDataContainer')
+)
+const RepositoryCommitPage = asyncComponent(
+    () => import('./commit/RepositoryCommitPage'),
+    'RepositoryCommitPage',
+    require.resolveWeak('RepositoryCommitPage')
+)
+const RepositoryBranchesArea = asyncComponent(
+    () => import('./branches/RepositoryBranchesArea'),
+    'RepositoryBranchesArea',
+    require.resolveWeak('RepositoryBranchesArea')
+)
+const RepositoryReleasesArea = asyncComponent(
+    () => import('./releases/RepositoryReleasesArea'),
+    'RepositoryReleasesArea',
+    require.resolveWeak('RepositoryReleasesArea')
+)
+const RepoSettingsArea = asyncComponent(
+    () => import('./settings/RepoSettingsArea'),
+    'RepoSettingsArea',
+    require.resolveWeak('RepoSettingsArea')
+)
+const RepositoryCompareArea = asyncComponent(
+    () => import('./compare/RepositoryCompareArea'),
+    'RepositoryCompareArea',
+    require.resolveWeak('RepositoryCompareArea')
+)
+const RepositoryStatsArea = asyncComponent(
+    () => import('./stats/RepositoryStatsArea'),
+    'RepositoryStatsArea',
+    require.resolveWeak('RepositoryStatsArea')
+)
+
+export const repoContainerRoutes: ReadonlyArray<RepoContainerRoute> = [
+    {
+        path: '/-/commit/:revspec+',
+        render: context => (
+            <RepositoryGitDataContainer repoName={context.repo.name}>
+                <RepositoryCommitPage {...context} />
+            </RepositoryGitDataContainer>
+        ),
+    },
+    {
+        path: '/-/branches',
+        render: context => (
+            <RepositoryGitDataContainer repoName={context.repo.name}>
+                <RepositoryBranchesArea {...context} />
+            </RepositoryGitDataContainer>
+        ),
+    },
+    {
+        path: '/-/tags',
+        render: context => (
+            <RepositoryGitDataContainer repoName={context.repo.name}>
+                <RepositoryReleasesArea {...context} />
+            </RepositoryGitDataContainer>
+        ),
+    },
+    {
+        path: '/-/compare/:spec*',
+        render: context => (
+            <RepositoryGitDataContainer repoName={context.repo.name}>
+                <RepositoryCompareArea {...context} />
+            </RepositoryGitDataContainer>
+        ),
+    },
+    {
+        path: '/-/stats',
+        render: context => (
+            <RepositoryGitDataContainer repoName={context.repo.name}>
+                <RepositoryStatsArea {...context} />
+            </RepositoryGitDataContainer>
+        ),
+    },
+    {
+        path: '/-/settings',
+        render: context => (
+            <RepositoryGitDataContainer repoName={context.repo.name}>
+                <RepoSettingsArea {...context} />
+            </RepositoryGitDataContainer>
+        ),
+    },
+]
 
 /** Dev feature flag to make benchmarking the file tree in isolation easier. */
 const hideRepoRevContent = localStorage.getItem('hideRepoRevContent')
