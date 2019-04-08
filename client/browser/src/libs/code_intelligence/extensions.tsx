@@ -8,7 +8,7 @@ import {
 } from '../../../../../shared/src/commandPalette/CommandList'
 import { Notifications } from '../../../../../shared/src/notifications/Notifications'
 
-import { DOMFunctions } from '@sourcegraph/codeintellify'
+import { DiffPart, DOMFunctions } from '@sourcegraph/codeintellify'
 import * as H from 'history'
 import {
     decorationAttachmentStyleForTheme,
@@ -98,7 +98,7 @@ const groupByLine = (decorations: TextDocumentDecoration[]) => {
 
 const cleanupDecorations = (dom: DOMFunctions, codeView: HTMLElement, lines: number[]): void => {
     for (const lineNumber of lines) {
-        const codeElement = dom.getCodeElementFromLineNumber(codeView, lineNumber)
+        const codeElement = dom.getLineElementFromLineNumber(codeView, lineNumber)
         if (!codeElement) {
             continue
         }
@@ -117,14 +117,19 @@ export const applyDecorations = (
     dom: DOMFunctions,
     codeView: HTMLElement,
     decorations: TextDocumentDecoration[],
-    previousDecorations: number[]
+    previousDecorations: number[],
+    part?: DiffPart
 ): number[] => {
     cleanupDecorations(dom, codeView, previousDecorations)
     const decorationsByLine = groupByLine(decorations)
     for (const [lineNumber, decorationsForLine] of decorationsByLine) {
-        const codeElement = dom.getCodeElementFromLineNumber(codeView, lineNumber)
+        const codeElement = dom.getLineElementFromLineNumber(codeView, lineNumber, part)
         if (!codeElement) {
-            throw new Error(`Unable to find code element for line ${lineNumber}`)
+            if (part === undefined) {
+                throw new Error(`Unable to find code element for line ${lineNumber}`)
+            }
+            // In diffs it's normal that many lines are not visible
+            continue
         }
         for (const decoration of decorationsForLine) {
             const style = decorationStyleForTheme(decoration, IS_LIGHT_THEME)

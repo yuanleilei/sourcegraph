@@ -87,7 +87,7 @@ export function querySelectorAllOrSelf<K extends keyof SVGElementTagNameMap>(
     element: Element,
     selectors: K
 ): Iterable<SVGElementTagNameMap[K]>
-export function querySelectorAllOrSelf(element: Element, selectors: string): Iterable<Element>
+export function querySelectorAllOrSelf<E extends Element = Element>(element: Element, selectors: string): Iterable<E>
 export function querySelectorAllOrSelf(element: Element, selectors: string): Iterable<Element> {
     return element.matches(selectors) ? [element] : element.querySelectorAll(selectors)
 }

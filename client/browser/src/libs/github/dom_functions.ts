@@ -97,6 +97,16 @@ export const diffDomFunctions: DOMFunctions = {
         }
         return getBlobCodeInner(codeCell)
     },
+    getLineElementFromLineNumber: (codeView, line, part) => {
+        const nthChild = getLineNumberElementIndex(part!) + 1 // nth-child() is 1-indexed
+        const lineNumberCell = codeView.querySelector<HTMLTableCellElement>(
+            `td:nth-child(${nthChild})[data-line-number="${line}"]`
+        )
+        if (!lineNumberCell) {
+            return null
+        }
+        return lineNumberCell.parentElement
+    },
     getLineNumberFromCodeElement,
     getDiffCodePart,
     isFirstCharacterDiffIndicator: codeElement => {

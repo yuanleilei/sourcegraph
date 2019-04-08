@@ -51,7 +51,7 @@ export const trackCodeViews = ({
                     mergeMap(addedElement =>
                         from(codeViewSpecResolvers).pipe(
                             mergeMap(spec =>
-                                [...(querySelectorAllOrSelf(addedElement, spec.selector) as Iterable<HTMLElement>)]
+                                [...querySelectorAllOrSelf<HTMLElement>(addedElement, spec.selector)]
                                     .map(element => {
                                         const codeViewSpec = spec.resolveCodeViewSpec(element)
                                         return (
@@ -72,10 +72,7 @@ export const trackCodeViews = ({
                     filter(isInstanceOf(HTMLElement)),
                     mergeMap(removedElement =>
                         from(codeViewSpecResolvers).pipe(
-                            mergeMap(
-                                ({ selector }) =>
-                                    querySelectorAllOrSelf(removedElement, selector) as Iterable<HTMLElement>
-                            ),
+                            mergeMap(({ selector }) => querySelectorAllOrSelf<HTMLElement>(removedElement, selector)),
                             map(element => ({
                                 element,
                                 type: 'removed' as const,
