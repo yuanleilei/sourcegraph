@@ -11,10 +11,29 @@ import { PlatformContextProps } from '../../../shared/src/platform/context'
 import { SettingsCascadeProps } from '../../../shared/src/settings/settings'
 import { WebActionsNavItems, WebCommandListPopoverButton } from '../components/shared'
 import { isDiscussionsEnabled } from '../discussions'
+import { ChecksIcon, CodemodIcon, ThreadsIcon } from '../enterprise/threads/icons'
 import { KeybindingsProps } from '../keybindings'
 import { ThemePreferenceProps, ThemeProps } from '../theme'
 import { EventLoggerProps } from '../tracking/eventLogger'
 import { UserNavItem } from './UserNavItem'
+
+/**
+ * A nav link that shows a tooltipped icon on narrow screens and a non-tooltipped icon label on
+ * wider screens.
+ *
+ * The tooltip is hidden on wider screens because it is redundant with the label text.
+ */
+const NavLinkWithIconOnlyTooltip: React.FunctionComponent<{
+    to: string
+    text: string
+    icon: React.ComponentType<{ className?: string }>
+}> = ({ to, text, icon: Icon }) => (
+    <Link to={to} className="nav-link d-flex align-items-center">
+        <Icon className="icon-inline d-lg-none" data-tooltip={text} />
+        <Icon className="icon-inline d-none d-lg-inline-block" />
+        <span className="d-none d-lg-inline-block ml-1">{text}</span>
+    </Link>
+)
 
 interface Props
     extends SettingsCascadeProps,
@@ -72,11 +91,18 @@ export class NavLinks extends React.PureComponent<Props> {
                 {(!this.props.showDotComMarketing ||
                     !!this.props.authenticatedUser ||
                     this.props.location.pathname !== '/welcome') && (
-                    <li className="nav-item">
-                        <Link to="/explore" className="nav-link">
-                            Explore
-                        </Link>
-                    </li>
+                    <>
+                        {/* TODO!(sqs): only show these on enterprise */}
+                        <li className="nav-item">
+                            <NavLinkWithIconOnlyTooltip to="/threads" text="Threads" icon={ThreadsIcon} />
+                        </li>
+                        <li className="nav-item">
+                            <NavLinkWithIconOnlyTooltip to="/checks" text="Checks" icon={ChecksIcon} />
+                        </li>
+                        <li className="nav-item">
+                            <NavLinkWithIconOnlyTooltip to="/codemods" text="Codemods" icon={CodemodIcon} />
+                        </li>
+                    </>
                 )}
                 {!this.props.authenticatedUser && (
                     <>

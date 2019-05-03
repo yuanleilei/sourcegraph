@@ -18,6 +18,14 @@ interface Props extends ExtensionsControllerProps {
     commitID: string
     rev: string | undefined
     filePath: string
+    className?: string
+    showNavbar?: boolean
+
+    /**
+     * If set, a "Discard" button is shown, and this callback is called when it is clicked.
+     */
+    onDiscard?: () => void
+
     history: H.History
     location: H.Location
 }
@@ -34,8 +42,8 @@ export class DiscussionsCreate extends React.PureComponent<Props, State> {
 
     public render(): JSX.Element | null {
         return (
-            <div className="discussions-create">
-                <DiscussionsNavbar {...this.props} threadTitle={this.state.title} />
+            <div className={`discussions-create ${this.props.className || ''}`}>
+                {this.props.showNavbar && <DiscussionsNavbar {...this.props} threadTitle={this.state.title} />}
                 <div className="discussions-create__content">
                     {this.state.title && this.state.title.length > 60 && (
                         <div className="alert alert-info p-1 mt-3 ml-3 mr-3 mb-0">

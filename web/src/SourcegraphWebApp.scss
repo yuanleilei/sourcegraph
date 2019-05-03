@@ -71,6 +71,13 @@ $theme-colors-light: (
 $body-color: var(--body-color);
 $body-bg: var(--body-bg);
 
+.bg-body {
+    background-color: var(--body-bg) !important;
+}
+.text-body {
+    color: var(--body-color) !important;
+}
+
 $text-muted: var(--text-muted);
 
 // Borders
@@ -229,7 +236,6 @@ hr {
 // Pages
 @import './Layout';
 @import './api/APIConsole';
-@import './discussions/DiscussionsPage';
 @import './extensions/ExtensionsArea';
 @import './extensions/extension/ExtensionArea';
 @import './global/GlobalAlerts';

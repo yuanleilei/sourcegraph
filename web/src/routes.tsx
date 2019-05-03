@@ -179,15 +179,6 @@ export const routes: ReadonlyArray<LayoutRouteProps> = [
         exact: true,
     },
     {
-        path: '/discussions',
-        render: asyncComponent(
-            () => import('./discussions/DiscussionsPage'),
-            'DiscussionsPage',
-            require.resolveWeak('./discussions/DiscussionsPage')
-        ),
-        exact: true,
-    },
-    {
         path: '/search/scope/:id',
         render: asyncComponent(
             () => import('./search/input/ScopePage'),

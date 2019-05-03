@@ -421,12 +421,21 @@ input DiscussionThreadCreateInput {
     # The target repo of this discussion thread. This is nullable so that in
     # the future more target types may be added.
     targetRepo: DiscussionThreadTargetRepoInput
+
+    # The settings for the thread.
+    settings: String
 }
 
 # Describes an update mutation to an existing thread.
 input DiscussionThreadUpdateInput {
     # The ID of the thread to update.
     ThreadID: ID!
+
+    # When non-null, indicates that the thread's title should be updated to the specified value.
+    title: String
+
+    # When non-null, indicates that the thread's settings should be updated to the specified value.
+    settings: String
 
     # When non-null, indicates that the thread should be archived.
     Archive: Boolean
@@ -842,7 +851,7 @@ type Search {
 }
 
 # A search result.
-union SearchResult = FileMatch | CommitSearchResult | Repository
+union SearchResult = FileMatch | CommitSearchResult | Repository | CodemodResult
 
 # An object representing a markdown string.
 type Markdown {
@@ -1034,6 +1043,20 @@ type CommitSearchResult implements GenericSearchResultInterface {
     messagePreview: HighlightedString
     # The matching portion of the diff, if any.
     diffPreview: HighlightedString
+}
+
+# The result of a code modification query.
+type CodemodResult implements GenericSearchResultInterface {
+    # URL to an icon that is displayed with every search result.
+    icon: String!
+    # A markdown string that is rendered prominently.
+    label: Markdown!
+    # The URL of the result.
+    url: String!
+    # A markdown string that is rendered less prominently.
+    detail: Markdown!
+    # A list of matches in this search result.
+    matches: [SearchResultMatch!]!
 }
 
 # A search result that is a diff between two diffable Git objects.
@@ -2510,6 +2533,14 @@ type DiscussionThreadTargetRepo {
 # do not understand gracefully.
 union DiscussionThreadTarget = DiscussionThreadTargetRepo
 
+# The possible statuses of a discussion thread.
+enum DiscussionThreadStatus {
+    # The discussion thread is open.
+    OPEN
+    # The discussion thread is closed.
+    CLOSED
+}
+
 # A discussion thread around some target (e.g. a file in a repo).
 type DiscussionThread {
     # The discussion thread ID (globally unique).
@@ -2526,6 +2557,15 @@ type DiscussionThread {
 
     # The target of this discussion thread.
     target: DiscussionThreadTarget!
+
+    # The settings for this discussion thread.
+    settings: String!
+
+    # The status of this discussion thread.
+    status: DiscussionThreadStatus!
+
+    # The URL where this thread can be viewed in isolation.
+    url: String!
 
     # The URL at which this thread can be viewed inline (i.e. in the file blob view).
     #

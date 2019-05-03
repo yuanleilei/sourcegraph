@@ -13,6 +13,7 @@ type DiscussionThread struct {
 	AuthorUserID int32
 	Title        string
 	TargetRepo   *DiscussionThreadTargetRepo
+	Settings     *string
 	CreatedAt    time.Time
 	ArchivedAt   *time.Time
 	UpdatedAt    time.Time

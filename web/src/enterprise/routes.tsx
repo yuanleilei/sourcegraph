@@ -3,12 +3,17 @@ import { Redirect } from 'react-router'
 import { LayoutRouteProps, routes } from '../routes'
 import { asyncComponent } from '../util/asyncComponent'
 import { welcomeAreaRoutes } from './dotcom/welcome/routes'
+import { CodemodIcon } from './threads/icons'
 
 const WelcomeArea = asyncComponent(
     () => import('./dotcom/welcome/WelcomeArea'),
     'WelcomeArea',
     require.resolveWeak('./dotcom/welcome/WelcomeArea')
 )
+
+const ThreadsArea = React.lazy(async () => ({
+    default: (await import('./threads/global/ThreadsArea')).ThreadsArea,
+}))
 
 export const enterpriseRoutes: ReadonlyArray<LayoutRouteProps> = [
     {
@@ -37,6 +42,22 @@ export const enterpriseRoutes: ReadonlyArray<LayoutRouteProps> = [
     {
         path: '/welcome',
         render: props => <WelcomeArea {...props} routes={welcomeAreaRoutes} />,
+    },
+    {
+        path: '/threads',
+        render: ThreadsArea,
+    },
+    {
+        path: '/checks',
+        render: asyncComponent(
+            () => import('./checks/global/ChecksArea'),
+            'ChecksArea',
+            require.resolveWeak('./checks/global/ChecksArea')
+        ),
+    },
+    {
+        path: '/codemods',
+        render: props => <ThreadsArea {...props} kind="codemod" kindIcon={CodemodIcon} />,
     },
     ...routes,
 ]

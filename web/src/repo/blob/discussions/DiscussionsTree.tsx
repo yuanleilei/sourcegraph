@@ -35,14 +35,22 @@ export class DiscussionsTree extends React.PureComponent<Props> {
         const threadID = hash.get('threadID') as GQL.ID
         const commentID = hash.get('commentID') as GQL.ID
 
-        if (threadID && commentID) {
-            return <DiscussionsThread threadID={threadID} commentID={commentID} {...this.props} />
+        if (threadID) {
+            return (
+                <DiscussionsThread
+                    threadID={threadID}
+                    commentID={commentID}
+                    {...this.props}
+                    showNavbar={true}
+                    forceURL={true}
+                />
+            )
         }
         if (threadID) {
-            return <DiscussionsThread threadID={threadID} {...this.props} />
+            return <DiscussionsThread threadID={threadID} {...this.props} showNavbar={true} forceURL={true} />
         }
         if (hash.get('createThread') === 'true') {
-            return <DiscussionsCreate {...this.props} />
+            return <DiscussionsCreate {...this.props} showNavbar={true} />
         }
         return <DiscussionsList {...this.props} />
     }
