@@ -4,7 +4,11 @@ import { LayoutRouteProps, routes } from '../routes'
 import { asyncComponent } from '../util/asyncComponent'
 import { welcomeAreaRoutes } from './dotcom/welcome/routes'
 
-const WelcomeArea = asyncComponent(() => import('./dotcom/welcome/WelcomeArea'), 'WelcomeArea')
+const WelcomeArea = asyncComponent(
+    () => import('./dotcom/welcome/WelcomeArea'),
+    'WelcomeArea',
+    require.resolveWeak('./dotcom/welcome/WelcomeArea')
+)
 
 export const enterpriseRoutes: ReadonlyArray<LayoutRouteProps> = [
     {
@@ -14,7 +18,8 @@ export const enterpriseRoutes: ReadonlyArray<LayoutRouteProps> = [
         exact: true,
         render: asyncComponent(
             () => import('./user/productSubscriptions/NewProductSubscriptionPageOrRedirectUser'),
-            'NewProductSubscriptionPageOrRedirectUser'
+            'NewProductSubscriptionPageOrRedirectUser',
+            require.resolveWeak('./user/productSubscriptions/NewProductSubscriptionPageOrRedirectUser')
         ),
     },
     {

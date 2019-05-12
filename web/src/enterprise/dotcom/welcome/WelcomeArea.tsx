@@ -69,7 +69,7 @@ export class WelcomeArea extends React.PureComponent<WelcomeAreaProps> {
                     <React.Suspense fallback={<LoadingSpinner className="icon-inline my-2 d-block mx-auto" />}>
                         <Switch>
                             {this.props.routes.map(
-                                ({ path, exact, render, condition = () => true }) =>
+                                ({ path, exact, render: C, condition = () => true }) =>
                                     condition(context) && (
                                         <Route
                                             path={this.props.match.url + path}
@@ -78,7 +78,7 @@ export class WelcomeArea extends React.PureComponent<WelcomeAreaProps> {
                                             // tslint:disable-next-line:jsx-no-lambda
                                             render={routeComponentProps => (
                                                 <>
-                                                    {render({ ...context, ...routeComponentProps })}
+                                                    <C {...context} {...routeComponentProps} />
                                                     <WelcomeAreaFooter isLightTheme={this.props.isLightTheme} />
                                                 </>
                                             )}

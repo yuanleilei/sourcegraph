@@ -6,7 +6,8 @@ export const enterpriseExploreSections: ReadonlyArray<ExploreSectionDescriptor> 
     {
         render: asyncComponent(
             () => import('../extensions/explore/ExtensionsExploreSection'),
-            'ExtensionsExploreSection'
+            'ExtensionsExploreSection',
+            require.resolveWeak('../extensions/explore/ExtensionsExploreSection')
         ),
     },
     ...exploreSections,

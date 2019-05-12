@@ -74,7 +74,7 @@ export const SiteAdminArea = withAuthenticatedUser(
                         <ErrorBoundary location={this.props.location}>
                             <Switch>
                                 {this.props.routes.map(
-                                    ({ render, path, exact, condition = () => true }) =>
+                                    ({ render: C, path, exact, condition = () => true }) =>
                                         condition(context) && (
                                             <Route
                                                 // see https://github.com/ReactTraining/react-router/issues/4578#issuecomment-334489490
@@ -82,9 +82,9 @@ export const SiteAdminArea = withAuthenticatedUser(
                                                 path={this.props.match.url + path}
                                                 exact={exact}
                                                 // tslint:disable-next-line:jsx-no-lambda RouteProps.render is an exception
-                                                render={routeComponentProps =>
-                                                    render({ ...context, ...routeComponentProps })
-                                                }
+                                                render={routeComponentProps => (
+                                                    <C {...context} {...routeComponentProps} />
+                                                )}
                                             />
                                         )
                                 )}

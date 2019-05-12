@@ -95,14 +95,14 @@ export class ExtensionsArea extends React.Component<ExtensionsAreaProps, Extensi
                 />
                 <Switch>
                     {this.props.routes.map(
-                        ({ path, exact, condition = () => true, render }) =>
+                        ({ path, exact, condition = () => true, render: C }) =>
                             condition(context) && (
                                 <Route
                                     key="hardcoded-key"
                                     path={this.props.match.url + path}
                                     exact={exact}
                                     // tslint:disable-next-line:jsx-no-lambda
-                                    render={routeComponentProps => render({ ...context, ...routeComponentProps })}
+                                    render={routeComponentProps => <C {...context} {...routeComponentProps} />}
                                 />
                             )
                     )}

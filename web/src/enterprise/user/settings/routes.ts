@@ -9,7 +9,11 @@ export const enterpriseUserSettingsAreaRoutes: ReadonlyArray<UserSettingsAreaRou
     {
         path: '/external-accounts',
         exact: true,
-        render: asyncComponent(() => import('./UserSettingsExternalAccountsPage'), 'UserSettingsExternalAccountsPage'),
+        render: asyncComponent(
+            () => import('./UserSettingsExternalAccountsPage'),
+            'UserSettingsExternalAccountsPage',
+            require.resolveWeak('./UserSettingsExternalAccountsPage')
+        ),
         condition: () => authExp,
     },
     {
@@ -17,7 +21,8 @@ export const enterpriseUserSettingsAreaRoutes: ReadonlyArray<UserSettingsAreaRou
         exact: true,
         render: asyncComponent(
             () => import('../productSubscriptions/UserSubscriptionsNewProductSubscriptionPage'),
-            'UserSubscriptionsNewProductSubscriptionPage'
+            'UserSubscriptionsNewProductSubscriptionPage',
+            require.resolveWeak('../productSubscriptions/UserSubscriptionsNewProductSubscriptionPage')
         ),
         condition: () => SHOW_BUSINESS_FEATURES,
     },
@@ -26,7 +31,8 @@ export const enterpriseUserSettingsAreaRoutes: ReadonlyArray<UserSettingsAreaRou
         exact: true,
         render: asyncComponent(
             () => import('../productSubscriptions/UserSubscriptionsProductSubscriptionPage'),
-            'UserSubscriptionsProductSubscriptionPage'
+            'UserSubscriptionsProductSubscriptionPage',
+            require.resolveWeak('../productSubscriptions/UserSubscriptionsProductSubscriptionPage')
         ),
         condition: () => SHOW_BUSINESS_FEATURES,
     },
@@ -35,7 +41,8 @@ export const enterpriseUserSettingsAreaRoutes: ReadonlyArray<UserSettingsAreaRou
         exact: true,
         render: asyncComponent(
             () => import('../productSubscriptions/UserSubscriptionsEditProductSubscriptionPage'),
-            'UserSubscriptionsEditProductSubscriptionPage'
+            'UserSubscriptionsEditProductSubscriptionPage',
+            require.resolveWeak('../productSubscriptions/UserSubscriptionsEditProductSubscriptionPage')
         ),
         condition: () => SHOW_BUSINESS_FEATURES,
     },
@@ -44,7 +51,8 @@ export const enterpriseUserSettingsAreaRoutes: ReadonlyArray<UserSettingsAreaRou
         exact: true,
         render: asyncComponent(
             () => import('../productSubscriptions/UserSubscriptionsProductSubscriptionsPage'),
-            'UserSubscriptionsProductSubscriptionsPage'
+            'UserSubscriptionsProductSubscriptionsPage',
+            require.resolveWeak('../productSubscriptions/UserSubscriptionsProductSubscriptionsPage')
         ),
         condition: () => SHOW_BUSINESS_FEATURES,
     },

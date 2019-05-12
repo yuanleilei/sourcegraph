@@ -245,14 +245,14 @@ export class RepoRevContainer extends React.PureComponent<RepoRevContainerProps,
                 />
                 <Switch>
                     {this.props.routes.map(
-                        ({ path, render, exact, condition = () => true }) =>
+                        ({ path, render: C, exact, condition = () => true }) =>
                             condition(context) && (
                                 <Route
                                     path={this.props.routePrefix + path}
                                     key="hardcoded-key" // see https://github.com/ReactTraining/react-router/issues/4578#issuecomment-334489490
                                     exact={exact}
                                     // tslint:disable-next-line:jsx-no-lambda RouteProps.render is an exception
-                                    render={routeComponentProps => render({ ...context, ...routeComponentProps })}
+                                    render={routeComponentProps => <C {...context} {...routeComponentProps} />}
                                 />
                             )
                     )}

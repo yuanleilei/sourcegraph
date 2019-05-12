@@ -190,16 +190,16 @@ export class ExtensionArea extends React.Component<ExtensionAreaProps> {
                         <React.Suspense fallback={<LoadingSpinner className="icon-inline m-2" />}>
                             <Switch>
                                 {this.props.routes.map(
-                                    ({ path, render, exact, condition = () => true }) =>
+                                    ({ path, render: C, exact, condition = () => true }) =>
                                         condition(context) && (
                                             <Route
                                                 path={url + path}
                                                 exact={exact}
                                                 key="hardcoded-key" // see https://github.com/ReactTraining/react-router/issues/4578#issuecomment-334489490
                                                 // tslint:disable-next-line:jsx-no-lambda
-                                                render={routeComponentProps =>
-                                                    render({ ...context, ...routeComponentProps })
-                                                }
+                                                render={routeComponentProps => (
+                                                    <C {...context} {...routeComponentProps} />
+                                                )}
                                             />
                                         )
                                 )}

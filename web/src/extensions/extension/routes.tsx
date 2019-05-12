@@ -5,7 +5,8 @@ import { ExtensionAreaRoute } from './ExtensionArea'
 
 const RegistryExtensionOverviewPage = asyncComponent(
     () => import('./RegistryExtensionOverviewPage'),
-    'RegistryExtensionOverviewPage'
+    'RegistryExtensionOverviewPage',
+    require.resolveWeak('./RegistryExtensionOverviewPage')
 )
 
 export const extensionAreaRoutes: ReadonlyArray<ExtensionAreaRoute> = [
@@ -18,14 +19,19 @@ export const extensionAreaRoutes: ReadonlyArray<ExtensionAreaRoute> = [
     {
         path: `/-/manifest`,
         exact: true,
-        render: asyncComponent(() => import('./RegistryExtensionManifestPage'), 'RegistryExtensionManifestPage'),
+        render: asyncComponent(
+            () => import('./RegistryExtensionManifestPage'),
+            'RegistryExtensionManifestPage',
+            require.resolveWeak('./RegistryExtensionManifestPage')
+        ),
     },
     {
         path: `/-/contributions`,
         exact: true,
         render: asyncComponent(
             () => import('./RegistryExtensionContributionsPage'),
-            'RegistryExtensionContributionsPage'
+            'RegistryExtensionContributionsPage',
+            require.resolveWeak('./RegistryExtensionContributionsPage')
         ),
     },
 ]
