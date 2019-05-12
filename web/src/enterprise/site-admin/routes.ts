@@ -8,7 +8,8 @@ export const enterpriseSiteAdminAreaRoutes: ReadonlyArray<SiteAdminAreaRoute> = 
         path: '/license',
         render: asyncComponent(
             () => import('./productSubscription/SiteAdminProductSubscriptionPage'),
-            'SiteAdminProductSubscriptionPage'
+            'SiteAdminProductSubscriptionPage',
+            require.resolveWeak('./productSubscription/SiteAdminProductSubscriptionPage')
         ),
         exact: true,
     },
@@ -16,7 +17,8 @@ export const enterpriseSiteAdminAreaRoutes: ReadonlyArray<SiteAdminAreaRoute> = 
         path: '/dotcom/customers',
         render: asyncComponent(
             () => import('./dotcom/customers/SiteAdminCustomersPage'),
-            'SiteAdminProductCustomersPage'
+            'SiteAdminProductCustomersPage',
+            require.resolveWeak('./dotcom/customers/SiteAdminCustomersPage')
         ),
         exact: true,
     },
@@ -24,7 +26,8 @@ export const enterpriseSiteAdminAreaRoutes: ReadonlyArray<SiteAdminAreaRoute> = 
         path: '/dotcom/product/subscriptions/new',
         render: asyncComponent(
             () => import('./dotcom/productSubscriptions/SiteAdminCreateProductSubscriptionPage'),
-            'SiteAdminCreateProductSubscriptionPage'
+            'SiteAdminCreateProductSubscriptionPage',
+            require.resolveWeak('./dotcom/productSubscriptions/SiteAdminCreateProductSubscriptionPage')
         ),
         exact: true,
     },
@@ -32,7 +35,8 @@ export const enterpriseSiteAdminAreaRoutes: ReadonlyArray<SiteAdminAreaRoute> = 
         path: '/dotcom/product/subscriptions/:subscriptionUUID',
         render: asyncComponent(
             () => import('./dotcom/productSubscriptions/SiteAdminProductSubscriptionPage'),
-            'SiteAdminProductSubscriptionPage'
+            'SiteAdminProductSubscriptionPage',
+            require.resolveWeak('./dotcom/productSubscriptions/SiteAdminProductSubscriptionPage')
         ),
         exact: true,
     },
@@ -40,7 +44,8 @@ export const enterpriseSiteAdminAreaRoutes: ReadonlyArray<SiteAdminAreaRoute> = 
         path: '/dotcom/product/subscriptions',
         render: asyncComponent(
             () => import('./dotcom/productSubscriptions/SiteAdminProductSubscriptionsPage'),
-            'SiteAdminProductSubscriptionsPage'
+            'SiteAdminProductSubscriptionsPage',
+            require.resolveWeak('./dotcom/productSubscriptions/SiteAdminProductSubscriptionsPage')
         ),
         exact: true,
     },
@@ -48,7 +53,8 @@ export const enterpriseSiteAdminAreaRoutes: ReadonlyArray<SiteAdminAreaRoute> = 
         path: '/dotcom/product/licenses',
         render: asyncComponent(
             () => import('./dotcom/productSubscriptions/SiteAdminProductLicensesPage'),
-            'SiteAdminProductLicensesPage'
+            'SiteAdminProductLicensesPage',
+            require.resolveWeak('./dotcom/productSubscriptions/SiteAdminProductLicensesPage')
         ),
         exact: true,
     },
@@ -56,18 +62,27 @@ export const enterpriseSiteAdminAreaRoutes: ReadonlyArray<SiteAdminAreaRoute> = 
         path: '/auth/providers',
         render: asyncComponent(
             () => import('./SiteAdminAuthenticationProvidersPage'),
-            'SiteAdminAuthenticationProvidersPage'
+            'SiteAdminAuthenticationProvidersPage',
+            require.resolveWeak('./SiteAdminAuthenticationProvidersPage')
         ),
         exact: true,
     },
     {
         path: '/auth/external-accounts',
-        render: asyncComponent(() => import('./SiteAdminExternalAccountsPage'), 'SiteAdminExternalAccountsPage'),
+        render: asyncComponent(
+            () => import('./SiteAdminExternalAccountsPage'),
+            'SiteAdminExternalAccountsPage',
+            require.resolveWeak('./SiteAdminExternalAccountsPage')
+        ),
         exact: true,
     },
     {
         path: '/registry/extensions',
-        render: asyncComponent(() => import('./SiteAdminRegistryExtensionsPage'), 'SiteAdminRegistryExtensionsPage'),
+        render: asyncComponent(
+            () => import('./SiteAdminRegistryExtensionsPage'),
+            'SiteAdminRegistryExtensionsPage',
+            require.resolveWeak('./SiteAdminRegistryExtensionsPage')
+        ),
         exact: true,
     },
 ]
