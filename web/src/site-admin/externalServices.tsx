@@ -117,7 +117,7 @@ export const GITHUB_EXTERNAL_SERVICE: ExternalServiceKindMetadata = {
             run: config => {
                 const value = '<GitHub personal access token>'
                 const edits = setProperty(config, ['token'], value, defaultFormattingOptions)
-                return { edits, selectText: '<GitHub personal access token>' }
+                return { edits, selectText: '<access token>' }
             },
         },
         {
@@ -133,18 +133,18 @@ export const GITHUB_EXTERNAL_SERVICE: ExternalServiceKindMetadata = {
             id: 'addRepo',
             label: 'Add a repository',
             run: config => {
-                const value = '<GitHub owner>/<GitHub repository name>'
+                const value = '<owner>/<repository>'
                 const edits = setProperty(config, ['repos', -1], value, defaultFormattingOptions)
-                return { edits, selectText: '<GitHub owner>/<GitHub repository name>' }
+                return { edits, selectText: '<owner>/<repository>' }
             },
         },
         {
             id: 'excludeRepo',
             label: 'Exclude a repository',
             run: config => {
-                const value = { name: '<GitHub owner>/<GitHub repository name>' }
+                const value = { name: '<owner>/<repository>' }
                 const edits = setProperty(config, ['exclude', -1], value, defaultFormattingOptions)
-                return { edits, selectText: '{"name": "<GitHub owner>/<GitHub repository name>"}' }
+                return { edits, selectText: '{"name": "<owner>/<repository>"}' }
             },
         },
         {
@@ -170,7 +170,7 @@ export const GITHUB_EXTERNAL_SERVICE: ExternalServiceKindMetadata = {
         },
     ],
     iconBrandColor: 'github',
-    shortDescription: 'Add GitHub repositories.',
+    shortDescription: 'Repository access, syncing and permissions configuration.',
     longDescription: (
         <span>
             Adding this configuration enables Sourcegraph to sync repositories from GitHub. Click the "quick configure"
@@ -182,23 +182,49 @@ export const GITHUB_EXTERNAL_SERVICE: ExternalServiceKindMetadata = {
         </span>
     ),
     defaultDisplayName: 'GitHub',
-    defaultConfig: `{
-  // Use Ctrl+Space for completion, and hover over JSON properties for documentation.
-  // Docs: https://docs.sourcegraph.com/admin/external_service/github#configuration
+    defaultConfig: `// GitHub service docs: https://docs.sourcegraph.com/admin/external_service/github
+// GitHub search qualifiers docs: https://help.github.com/en/articles/searching-for-repositories
+{
+  "url": "https://github.com",
 
-  "url": "https://github.com", // change to use with GitHub Enterprise
+  // token: GitHub API authentication token. Visit https://github.com/settings/tokens/new?scopes=repo&description=Sourcegraph
+  // to create a token with access to public and private repositories
+  "token": "<access token>",
 
-  // Enter an access token to mirror GitHub repositories. Create one for GitHub.com at
-  // https://github.com/settings/tokens/new?scopes=repo&description=Sourcegraph
-  // (for GitHub Enterprise, replace github.com with your instance's hostname).
-  // The "repo" scope is required to mirror private repositories.
-  "token": "",
+  // SELECTING REPOSITORIES
+  //
+  // There are 3 fields used to select repositories for searching and code intel:
+  //  - repositoryQuery (required)
+  //  - repos
+  //  - exclude
+  //
 
-  // An array of strings specifying which GitHub or GitHub Enterprise repositories to mirror on Sourcegraph.
-  // See the repositoryQuery documentation at https://docs.sourcegraph.com/admin/external_service/github#configuration for details.
+  // repositoryQuery: List of strings, either a special keyword (e.g. affiliated) or GitHub search qualifiers (e.g. archived:false)
+  //
+  // For getting started, replace "none" with either:
+  //  - "affiliated" // all repositories affiliated (accessible) by the token's owner
+  // or
+  //  - "org:<name>" // (e.g. "org:sourcegraph") all repositories belonging to the organization
+  //
+  // Additional query strings can be added to refine results:
+  //  - "archived:false fork:no created:>=2016" // use of multiple search qualifiers
+  //  - "user:docker repo:kubernetes/kubernetes" // fetch repositories outside of the user/org account
+  //
   "repositoryQuery": [
-    // "org:sourcegraph"
+    // "org:name"
   ]
+
+  // repos: Explicit list of repositories to select
+  // "repos": [
+  //   "<owner>/<repository>"
+  // ]
+
+  // exclude: Repositories to exclude (overrides repositories from repositoryQuery and repos)
+  // "exclude": [
+  //   {
+  //     "name": "<owner>/<repository>"
+  //   }
+  // ]
 }`,
 }
 
