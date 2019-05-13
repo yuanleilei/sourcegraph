@@ -223,9 +223,7 @@ func TestServer_SetRepoEnabled(t *testing.T) {
 	}).With(repos.Opt.RepoSources(bitbucketServerService.URN()))
 
 	type testCase struct {
-		name string
-		// which kinds of external services the new syncer manages
-		kinds []string
+		name  string
 		svcs  repos.ExternalServices // stored services
 		repos repos.Repos            // stored repos
 		kind  string
@@ -234,32 +232,6 @@ func TestServer_SetRepoEnabled(t *testing.T) {
 	}
 
 	var testCases []testCase
-
-	testCases = append(testCases, testCase{
-		name:  "only new syncer enabled repos are updated",
-		kinds: []string{"GITLAB", "BITBUCKETSERVER"},
-		svcs: repos.ExternalServices{
-			githubService,
-			gitlabService,
-			bitbucketServerService,
-		},
-		repos: repos.Repos{githubRepo, gitlabRepo, bitbucketServerRepo},
-		kind:  "GITHUB",
-		res:   &protocol.ExcludeRepoResponse{},
-	})
-
-	testCases = append(testCases, testCase{
-		name:  "ignores requests when new syncer is disabled for all kinds",
-		kinds: []string{},
-		svcs: repos.ExternalServices{
-			githubService,
-			gitlabService,
-			bitbucketServerService,
-		},
-		repos: repos.Repos{githubRepo, gitlabRepo, bitbucketServerRepo},
-		kind:  "BITBUCKETSERVER",
-		res:   &protocol.ExcludeRepoResponse{},
-	})
 
 	for _, k := range []struct {
 		svc  *repos.ExternalService
@@ -279,7 +251,6 @@ func TestServer_SetRepoEnabled(t *testing.T) {
 
 		testCases = append(testCases, testCase{
 			name:  "excluded from every external service of the same kind/" + k.svc.Kind,
-			kinds: svcs.Kinds(),
 			svcs:  svcs,
 			repos: repos.Repos{k.repo}.With(repos.Opt.RepoSources()),
 			kind:  k.svc.Kind,
@@ -311,7 +282,7 @@ func TestServer_SetRepoEnabled(t *testing.T) {
 				t.Fatalf("failed to prepare store: %v", err)
 			}
 
-			srv := httptest.NewServer((&Server{Kinds: tc.kinds, Store: store}).Handler())
+			srv := httptest.NewServer((&Server{Store: store}).Handler())
 			defer srv.Close()
 			cli := repoupdater.Client{URL: srv.URL}
 

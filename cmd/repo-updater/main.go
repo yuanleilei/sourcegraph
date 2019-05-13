@@ -9,7 +9,6 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"strconv"
 	"time"
 
 	opentracing "github.com/opentracing/opentracing-go"
@@ -30,8 +29,6 @@ import (
 const port = "3182"
 
 func main() {
-	syncerEnabled, _ := strconv.ParseBool(env.Get("SRC_SYNCER_ENABLED", "true", "Use the new repo metadata syncer."))
-
 	ctx := context.Background()
 	env.Lock()
 	env.HandleHelpFlag()
@@ -99,21 +96,7 @@ func main() {
 		repos.BitbucketServerUsernameMigration(clock), // Needs to run before EnabledStateDeprecationMigration
 		repos.BitbucketServerSetDefaultRepositoryQueryMigration(clock),
 		repos.AWSCodeCommitSetBogusGitCredentialsMigration(clock),
-	}
-
-	var kinds []string
-	if syncerEnabled {
-		kinds = append(kinds,
-			"GITHUB",
-			"GITLAB",
-			"BITBUCKETSERVER",
-			"AWSCODECOMMIT",
-			"OTHER",
-			"GITOLITE",
-		)
-		migrations = append(migrations,
-			repos.EnabledStateDeprecationMigration(src, clock, kinds...),
-		)
+		repos.EnabledStateDeprecationMigration(src, clock),
 	}
 
 	for _, m := range migrations {
@@ -122,91 +105,44 @@ func main() {
 		}
 	}
 
-	newSyncerEnabled := make(map[string]bool, len(kinds))
-	for _, kind := range kinds {
-		newSyncerEnabled[kind] = true
-	}
-
 	frontendAPI := repos.NewInternalAPI(10 * time.Second)
 
-	for _, kind := range []string{
-		"AWSCODECOMMIT",
-		"BITBUCKETSERVER",
-		"GITHUB",
-		"GITLAB",
-		"GITOLITE",
-		"PHABRICATOR",
-		"OTHER",
-	} {
-		if newSyncerEnabled[kind] {
-			continue
-		}
+	diffs := make(chan repos.Diff)
+	syncer := repos.NewSyncer(store, src, diffs, clock)
 
-		switch kind {
-		case "AWSCODECOMMIT":
-			go repos.SyncAWSCodeCommitConnections(ctx)
-			go repos.RunAWSCodeCommitRepositorySyncWorker(ctx)
-		case "BITBUCKETSERVER":
-			go repos.SyncBitbucketServerConnections(ctx)
-			go repos.RunBitbucketServerRepositorySyncWorker(ctx)
-		case "GITHUB":
-			go repos.SyncGitHubConnections(ctx)
-			go repos.RunGitHubRepositorySyncWorker(ctx)
-		case "GITLAB":
-			go repos.SyncGitLabConnections(ctx)
-			go repos.RunGitLabRepositorySyncWorker(ctx)
-		case "GITOLITE":
-			go repos.RunGitoliteRepositorySyncWorker(ctx)
-		case "PHABRICATOR":
-			go repos.RunPhabricatorRepositorySyncWorker(ctx, store)
-		case "OTHER":
-			log15.Warn("Other external service kind only supported with SRC_SYNCER_ENABLED=true")
-		default:
-			log.Fatalf("unknown external service kind %q", kind)
-		}
-	}
+	go func() { log.Fatal(syncer.Run(ctx, repos.GetUpdateInterval())) }()
 
-	var syncer *repos.Syncer
+	gps := repos.NewGitolitePhabricatorMetadataSyncer(store)
 
-	if syncerEnabled {
-		diffs := make(chan repos.Diff)
-		syncer = repos.NewSyncer(store, src, diffs, clock)
-
-		log15.Debug("starting new syncer", "external service kinds", kinds)
-		go func() { log.Fatal(syncer.Run(ctx, repos.GetUpdateInterval(), kinds...)) }()
-
-		gps := repos.NewGitolitePhabricatorMetadataSyncer(store)
-
-		// Start new repo syncer updates scheduler relay thread.
-		go func() {
-			for diff := range diffs {
-				if len(diff.Added) > 0 {
-					log15.Debug("syncer.sync", "diff.added", diff.Added.Names())
-				}
-
-				if len(diff.Modified) > 0 {
-					log15.Debug("syncer.sync", "diff.modified", diff.Modified.Names())
-				}
-
-				if len(diff.Deleted) > 0 {
-					log15.Debug("syncer.sync", "diff.deleted", diff.Deleted.Names())
-				}
-
-				rs := diff.Repos()
-				if !conf.Get().DisableAutoGitUpdates {
-					repos.Scheduler.Update(rs...)
-				}
-
-				if newSyncerEnabled["GITOLITE"] {
-					go func() {
-						if err := gps.Sync(ctx, rs); err != nil {
-							log15.Error("GitolitePhabricatorMetadataSyncer", "error", err)
-						}
-					}()
-				}
+	// Start new repo syncer updates scheduler relay thread.
+	go func() {
+		for diff := range diffs {
+			if len(diff.Added) > 0 {
+				log15.Debug("syncer.sync", "diff.added", diff.Added.Names())
 			}
-		}()
-	}
+
+			if len(diff.Modified) > 0 {
+				log15.Debug("syncer.sync", "diff.modified", diff.Modified.Names())
+			}
+
+			if len(diff.Deleted) > 0 {
+				log15.Debug("syncer.sync", "diff.deleted", diff.Deleted.Names())
+			}
+
+			rs := diff.Repos()
+			if !conf.Get().DisableAutoGitUpdates {
+				repos.Scheduler.Update(rs...)
+			}
+
+			go func() {
+				if err := gps.Sync(ctx, rs); err != nil {
+					log15.Error("GitolitePhabricatorMetadataSyncer", "error", err)
+				}
+			}()
+		}
+	}()
+
+	go repos.RunPhabricatorRepositorySyncWorker(ctx, store)
 
 	// Git fetches scheduler
 	go repos.RunScheduler(ctx)
@@ -216,7 +152,6 @@ func main() {
 
 	// Start up handler that frontend relies on
 	server := repoupdater.Server{
-		Kinds:       kinds,
 		Store:       store,
 		Syncer:      syncer,
 		InternalAPI: frontendAPI,
