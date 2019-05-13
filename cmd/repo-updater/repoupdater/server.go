@@ -26,9 +26,6 @@ import (
 type Server struct {
 	repos.Store
 	*repos.Syncer
-	InternalAPI interface {
-		ReposUpdateMetadata(ctx context.Context, repo api.RepoName, description string, fork, archived bool) error
-	}
 }
 
 // Handler returns the http.Handler that should be used to serve requests.
@@ -123,13 +120,9 @@ func (s *Server) handleExcludeRepo(w http.ResponseWriter, r *http.Request) {
 
 	for _, e := range es {
 		if err := e.Exclude(rs...); err != nil {
-			break
+			respond(w, http.StatusInternalServerError, err)
+			return
 		}
-	}
-
-	if err != nil {
-		respond(w, http.StatusInternalServerError, err)
-		return
 	}
 
 	err = s.Store.UpsertExternalServices(r.Context(), es...)

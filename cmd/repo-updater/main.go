@@ -105,8 +105,6 @@ func main() {
 		}
 	}
 
-	frontendAPI := repos.NewInternalAPI(10 * time.Second)
-
 	diffs := make(chan repos.Diff)
 	syncer := repos.NewSyncer(store, src, diffs, clock)
 
@@ -152,9 +150,8 @@ func main() {
 
 	// Start up handler that frontend relies on
 	server := repoupdater.Server{
-		Store:       store,
-		Syncer:      syncer,
-		InternalAPI: frontendAPI,
+		Store:  store,
+		Syncer: syncer,
 	}
 
 	var handler http.Handler

@@ -30,9 +30,7 @@ import (
 )
 
 func TestServer_handleRepoLookup(t *testing.T) {
-	s := &Server{
-		InternalAPI: &internalAPIFake{},
-	}
+	s := &Server{}
 
 	h := ObservedHandler(
 		log15.Root(),
@@ -635,9 +633,8 @@ func TestRepoLookup(t *testing.T) {
 	must(store.UpsertRepos(ctx, awsCodeCommitRepository))
 
 	s := Server{
-		Syncer:      &repos.Syncer{},
-		Store:       store,
-		InternalAPI: &internalAPIFake{},
+		Syncer: &repos.Syncer{},
+		Store:  store,
 	}
 
 	testCases := []struct {
@@ -710,13 +707,6 @@ func TestRepoLookup(t *testing.T) {
 			}
 		})
 	}
-}
-
-type internalAPIFake struct {
-}
-
-func (a *internalAPIFake) ReposUpdateMetadata(ctx context.Context, repo api.RepoName, description string, fork, archived bool) error {
-	return nil
 }
 
 func formatJSON(s string) string {
