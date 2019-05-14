@@ -115,7 +115,7 @@ export const GITHUB_EXTERNAL_SERVICE: ExternalServiceKindMetadata = {
             id: 'setAccessToken',
             label: 'Set access token',
             run: config => {
-                const value = '<GitHub personal access token>'
+                const value = '<access token>'
                 const edits = setProperty(config, ['token'], value, defaultFormattingOptions)
                 return { edits, selectText: '<access token>' }
             },
@@ -151,9 +151,9 @@ export const GITHUB_EXTERNAL_SERVICE: ExternalServiceKindMetadata = {
             id: 'addSearchQueryRepos',
             label: 'Add repositories matching search query',
             run: config => {
-                const value = '<GitHub search query>'
+                const value = '<search query>'
                 const edits = setProperty(config, ['repositoryQuery', -1], value, defaultFormattingOptions)
-                return { edits, selectText: '<GitHub search query>' }
+                return { edits, selectText: '<search query>' }
             },
         },
         {
@@ -182,8 +182,7 @@ export const GITHUB_EXTERNAL_SERVICE: ExternalServiceKindMetadata = {
         </span>
     ),
     defaultDisplayName: 'GitHub',
-    defaultConfig: `// GitHub service docs: https://docs.sourcegraph.com/admin/external_service/github
-// GitHub search qualifiers docs: https://help.github.com/en/articles/searching-for-repositories
+    defaultConfig: `// GitHub external service docs: https://docs.sourcegraph.com/admin/external_service/github
 {
   "url": "https://github.com",
 
@@ -210,6 +209,7 @@ export const GITHUB_EXTERNAL_SERVICE: ExternalServiceKindMetadata = {
   //  - "archived:false fork:no created:>=2016" // use of multiple search qualifiers
   //  - "user:docker repo:kubernetes/kubernetes" // fetch repositories outside of the user/org account
   //
+  // See https://help.github.com/en/articles/searching-for-repositories for the list of search qualifiers.
   "repositoryQuery": [
     // "org:name"
   ]
